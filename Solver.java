@@ -1,8 +1,7 @@
-package solver;
-
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 class Solver {
     Matrix mat;
@@ -38,7 +37,7 @@ class Solver {
         }
         System.out.print("The solution is: (");
         for (int i = 0; i < result.length; i++) {
-            System.out.print(result[i]);
+            System.out.printf(Locale.ENGLISH, "%.1f", result[i]);
             if (i != result.length - 1)
                 System.out.print(", ");
         }
@@ -165,7 +164,7 @@ class Solver {
                 mat.setNum(destRow, i, x);
             }
         }
-        System.out.print(coef + " " + "*" + " " + "R" + (sourceRow + 1));
+        System.out.printf(Locale.ENGLISH, "%.1f * R%d", coef, sourceRow + 1);
         if (sourceRow != destRow)
             System.out.print(" + R" + (destRow + 1));
         System.out.println(" -> R" + (destRow + 1));
