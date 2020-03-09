@@ -27,7 +27,7 @@ equal for
 3x + 7y + 4z = 3;
 1x + 2y + 2z = 3;
 ```
-###Complex numbers
+### Complex numbers
 Solver also can read and solve equations with complex numbers.
 Complex numbers format:
 ```
