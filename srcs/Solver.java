@@ -1,3 +1,5 @@
+package solver;
+
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -5,8 +7,6 @@ import java.util.Locale;
 
 class Solver {
     Matrix mat;
-    //precision for double comparison
-    private final double PRECISION = 0.0001;
     Errors error = null;
     List<Integer> colSwaps;
 
@@ -15,8 +15,8 @@ class Solver {
         colSwaps = new LinkedList<>();
     }
 
-    double[] execute() {
-        double[] result = new double[mat.getLength() - 1];
+    ComplexNumber[] execute() {
+        ComplexNumber[] result = new ComplexNumber[mat.getLength() - 1];
         System.out.println("Start solving the equation.");
         System.out.println("Row manipulation:");
         gaussianElimination();
@@ -24,24 +24,17 @@ class Solver {
         if (error != null)
             return null;
         gaussJordanElimination();
-        //columns reverse
-        Collections.reverse(colSwaps);
-        for (int i = 0; i < colSwaps.size(); i += 2) {
-            double temp = result[colSwaps.get(i)];
-            result[colSwaps.get(i)] = result[colSwaps.get(i + 1)];
-            result[colSwaps.get(i + 1)] = temp;
-        }
-        //saving result and printing solution
+        //saving result
         for (int i = 0; i < mat.getLength() - 1; i++) {
             result[i] = mat.getNum(i, mat.getLength() - 1);
         }
-        System.out.print("The solution is: (");
-        for (int i = 0; i < result.length; i++) {
-            System.out.printf(Locale.ENGLISH, "%.1f", result[i]);
-            if (i != result.length - 1)
-                System.out.print(", ");
+        //columns reverse
+        Collections.reverse(colSwaps);
+        for (int i = 0; i < colSwaps.size(); i += 2) {
+            ComplexNumber temp = result[colSwaps.get(i)];
+            result[colSwaps.get(i)] = result[colSwaps.get(i + 1)];
+            result[colSwaps.get(i + 1)] = temp;
         }
-        System.out.println(")");
         return result;
     }
 
@@ -49,10 +42,10 @@ class Solver {
         int count = 0;
         for (int i = 0; i < mat.getSize(); i++) {
             for (int j = 0; j < mat.getLength(); j++) {
-                if (Math.abs(mat.getNum(i, j) - 0) > PRECISION && j != mat.getLength() - 1) {
+                if (!mat.getNum(i, j).compareToSimpleNumber(0) && j != mat.getLength() - 1) {
                     count++;
                     break;
-                } else if (Math.abs(mat.getNum(i, j) - 0) > PRECISION && j == mat.getLength() - 1) {
+                } else if (!mat.getNum(i, j).compareToSimpleNumber(0) && j == mat.getLength() - 1) {
                     return Errors.NO_SOLUTIONS;
                 }
             }
@@ -68,7 +61,7 @@ class Solver {
     private void gaussJordanElimination() {
         for (int i = mat.getSize() - 1; i > 0; i--) {
             for (int j = 0; j < mat.getLength() - 1; j++) {
-                if (Math.abs(mat.getNum(i, j) - 1) < PRECISION) {
+                if (mat.getNum(i, j).compareToSimpleNumber(1)) {
                     columnClear(i, j, false);
                     break;
                 }
@@ -79,9 +72,9 @@ class Solver {
     private void gaussianElimination() {
         for (int i = 0; i < mat.getLength() - 1 && i < mat.getSize(); i++) {
             int j = i;
-            double x = mat.getNum(i, j);
+            ComplexNumber x = mat.getNum(i, j);
             //work with null element
-            if (Math.abs(x - 0) < PRECISION) {
+            if (x.compareToSimpleNumber(0)) {
                 int[] coordinates = findNextNonZero(i, j);
                 if (coordinates[0] > i)
                     rowSwap(i, coordinates[0]);
@@ -96,8 +89,8 @@ class Solver {
             }
 
             //work with non-null element
-            if (Math.abs(x - 1) > PRECISION)
-                rowMultiplication(1 / x, i, i);
+            if (!x.compareToSimpleNumber(1))
+                rowMultiplication(ComplexNumber.division(new ComplexNumber(1, 0), x), i, i);
             if (i != mat.getLength() - 2)
                 columnClear(i, j, true);
         }
@@ -109,14 +102,14 @@ class Solver {
         boolean finished = false;
         while (!finished) {
             for (int i = startRow; i < mat.getSize() && !finished; i++) {
-                if (Math.abs(mat.getNum(i, startCol) - 0) > PRECISION) {
+                if (!mat.getNum(i, startCol).compareToSimpleNumber(0)) {
                     finished = true;
                     resRow = i;
                     resCol = startCol;
                 }
             }
             for (int i = startCol; i < mat.getLength() - 1 && !finished; i++) {
-                if (Math.abs(mat.getNum(startRow, i) - 0) > PRECISION) {
+                if (!mat.getNum(startRow, i).compareToSimpleNumber(0)) {
                     finished = true;
                     resRow = startRow;
                     resCol = i;
@@ -134,7 +127,7 @@ class Solver {
 
     private void rowSwap(int sourceRow, int destRow) {
         for (int i = 0; i < mat.getLength(); i++) {
-            double temp = mat.getNum(destRow, i);
+            ComplexNumber temp = mat.getNum(destRow, i);
             mat.setNum(destRow, i, mat.getNum(sourceRow, i));
             mat.setNum(sourceRow, i, temp);
         }
@@ -143,49 +136,53 @@ class Solver {
 
     private void colSwap(int sourceCol, int destCol) {
         for (int i = 0; i < mat.getSize(); i++) {
-            double temp = mat.getNum(i, destCol);
+            ComplexNumber temp = mat.getNum(i, destCol);
             mat.setNum(i, destCol, mat.getNum(i, sourceCol));
             mat.setNum(i, sourceCol, temp);
         }
         System.out.println("R" + (sourceCol + 1) + " <-> R" + (destCol + 1));
     }
 
-    private void rowMultiplication(double coef, int sourceRow, int destRow) {
+    private void rowMultiplication(ComplexNumber coef, int sourceRow, int destRow) {
         int len = mat.getLength();
         for (int i = 0; i < len; i++) {
-            double x = mat.getNum(sourceRow, i);
-            x *= coef;
+            ComplexNumber x = mat.getNum(sourceRow, i);
+            x = ComplexNumber.multiplication(x, coef);
             if (sourceRow == destRow) {
                 mat.setNum(sourceRow, i, x);
             }
             else {
-                double y = mat.getNum(destRow, i);
-                x += y;
+                ComplexNumber y = mat.getNum(destRow, i);
+                x = ComplexNumber.add(x, y);
                 mat.setNum(destRow, i, x);
             }
         }
-        System.out.printf(Locale.ENGLISH, "%.1f * R%d", coef, sourceRow + 1);
+        if (Math.abs(coef.getImage() - 0) < coef.PRECISION)
+            System.out.printf(Locale.ENGLISH, "%.1f * R%d", coef.getReal(), sourceRow + 1);
+        else
+            System.out.printf(Locale.ENGLISH, "%.1f%+.1fi * R%d", coef.getReal(),
+                    coef.getImage(), sourceRow + 1);
         if (sourceRow != destRow)
             System.out.print(" + R" + (destRow + 1));
         System.out.println(" -> R" + (destRow + 1));
     }
 
     private void columnClear(int startRow, int column, boolean down) {
-        double start = mat.getNum(startRow, column);
+        ComplexNumber start = mat.getNum(startRow, column);
         if (down) {
             for (int i = startRow + 1; i < mat.getSize(); i++) {
-                double x = mat.getNum(i, column);
-                if (Math.abs(x - 0) < PRECISION)
+                ComplexNumber x = mat.getNum(i, column);
+                if (x.compareToSimpleNumber(0))
                     continue;
-                double coef = (-1.0) * (x / start);
+                ComplexNumber coef = ComplexNumber.multiplication(-1, ComplexNumber.division(x, start));
                 rowMultiplication(coef, startRow, i);
             }
         } else {
             for (int i = startRow - 1; i >= 0; i--) {
-                double x = mat.getNum(i, column);
-                if (Math.abs(x - 0) < PRECISION)
+                ComplexNumber x = mat.getNum(i, column);
+                if (x.compareToSimpleNumber(0))
                     continue;
-                double coef = (-1.0) * (x / start);
+                ComplexNumber coef = ComplexNumber.multiplication(-1, ComplexNumber.division(x, start));
                 rowMultiplication(coef, startRow, i);
             }
         }
