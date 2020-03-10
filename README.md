@@ -37,3 +37,8 @@ Complex numbers format:
  12.31  1.3-5i    12.3i -78.3i
 
 ```
+
+## Used technologies
+- Gauss-Jordan elimination
+- Matrixes
+- Design patterns: Singleton
