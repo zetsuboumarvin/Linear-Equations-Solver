@@ -4,7 +4,10 @@ JetBrains Academy's project
 Linear Equations Solver is a program that solves linear equations.
 
 ## Usage
-*-java Main -in [name of file with equations] -out [name of file where answer will be written]*  
+*-javac -d out srcs/*.java*  
+*-java -cp ./out Main -in [name of file with equations] -out [name of file where answer will be written]*  
+For example:
+*-java -cp ./out Main -in examples/in.txt -out out.txt*
 
 Format of input data:  
 N (number of variables) M (number of equations)  
