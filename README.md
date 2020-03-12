@@ -6,7 +6,7 @@ Linear Equations Solver is a program that solves linear equations.
 ## Usage
 Compilation:
 ```
--javac -d out srcs/\*.java  
+-javac -d out srcs/*.java  
 ```
 Launch:
 ```
