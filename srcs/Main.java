@@ -1,5 +1,3 @@
-package solver;
-
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -23,6 +21,10 @@ public class Main {
                     out = args[i + 1];
                     break;
             }
+        }
+        if (in.length() == 0 || out.length() == 0) {
+            System.out.println("Usage: java -cp ./out Main -in [fileName] -out [fileName]");
+            System.exit(1);
         }
         Matrix mat = parseFile(in);
         if (mat == null)

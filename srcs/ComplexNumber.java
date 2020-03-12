@@ -1,5 +1,3 @@
-package solver;
-
 import java.util.stream.Collectors;
 
 public class ComplexNumber {
