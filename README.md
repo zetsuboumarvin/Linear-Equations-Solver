@@ -49,6 +49,24 @@ Complex numbers format:
 
 ```
 
+## Example output
+```
+java -cp ./out Main -in examples/in.txt -out out.txt
+Start solving the equation.
+Row manipulation:
+0.5 * R1 -> R1
+-3.0 * R1 + R2 -> R2
+-1.0 * R1 + R3 -> R3
+0.4 * R2 -> R2
+-0.5 * R2 + R3 -> R3
+5.0 * R3 -> R3
+1.4 * R3 + R2 -> R2
+-2.5 * R3 + R1 -> R1
+-1.5 * R2 + R1 -> R1
+The solution is: (3.00000, -2.00000, 2.00000)
+Save to file out.txt
+```
+
 ## Used technologies
 - Gauss-Jordan elimination
 - Matrixes
