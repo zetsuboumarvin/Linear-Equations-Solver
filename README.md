@@ -6,15 +6,15 @@ Linear Equations Solver is a program that solves linear equations.
 ## Usage
 Compilation:
 ```
--javac -d out srcs/*.java  
+javac -d out srcs/*.java  
 ```
 Launch:
 ```
--java -cp ./out Main -in [name of file with equations] -out [name of file where answer will be written] 
+java -cp ./out Main -in [name of file with equations] -out [name of file where answer will be written] 
 ```
 Test files are present in examples folder:  
 ```
--java -cp ./out Main -in examples/in.txt -out out.txt
+java -cp ./out Main -in examples/in.txt -out out.txt
 ```
 
 Format of input data:  
